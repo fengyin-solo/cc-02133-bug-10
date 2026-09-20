@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { company } from '@/data/brand.js'
 
 const routes = [
   {
@@ -48,7 +49,8 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  document.title = `${to.meta.title} - 广州知运信息技术有限公司`
+  // 公司名取自品牌单一数据源，标题与首页、导航保持同源
+  document.title = `${to.meta.title} - ${company.name}`
   next()
 })
 

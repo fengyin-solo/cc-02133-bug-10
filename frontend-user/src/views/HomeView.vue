@@ -12,11 +12,14 @@
         />
         <div class="row">
           <div class="col col-3" v-for="feature in features" :key="feature.title">
-            <FeatureCard 
+            <FeatureCard
               :icon="feature.icon"
               :title="feature.title"
               :description="feature.description"
             />
+          </div>
+          <div v-if="!loading && features.length === 0" class="col col-12">
+            <el-empty description="暂无核心优势数据" />
           </div>
         </div>
       </div>
@@ -30,8 +33,8 @@
           subtitle="全方位的智慧物流系统，满足您的各种业务需求"
         />
         <div class="row">
-          <div class="col col-4" v-for="product in products" :key="product.title">
-            <ProductCard 
+          <div class="col col-4" v-for="product in products" :key="product.id">
+            <ProductCard
               :icon="product.icon"
               :product-id="product.id"
               :title="product.title"
@@ -39,6 +42,9 @@
               :features="product.features"
               @detail="handleProductDetail"
             />
+          </div>
+          <div v-if="!loading && products.length === 0" class="col col-12">
+            <el-empty description="暂无产品服务数据" />
           </div>
         </div>
       </div>
@@ -48,7 +54,7 @@
     <section class="section section-dark stats-section">
       <div class="container">
         <div class="stats-grid">
-          <div class="stat-card" v-for="stat in stats" :key="stat.label">
+          <div class="stat-card" v-for="stat in stats" :key="stat.key">
             <div class="stat-icon">
               <el-icon :size="32">
                 <component :is="stat.icon" />
@@ -70,13 +76,16 @@
         />
         <div class="row">
           <div class="col col-4" v-for="caseItem in cases" :key="caseItem.title">
-            <CaseCard 
+            <CaseCard
               :title="caseItem.title"
               :description="caseItem.description"
               :tag="caseItem.tag"
               :industry="caseItem.industry"
               @click="$router.push('/cases')"
             />
+          </div>
+          <div v-if="!loading && cases.length === 0" class="col col-12">
+            <el-empty description="暂无成功案例" />
           </div>
         </div>
         <div class="text-center" style="margin-top: 32px;">
@@ -91,18 +100,22 @@
     <!-- 合作伙伴 -->
     <section class="section section-light">
       <div class="container">
-        <SectionTitle 
-          title="合作伙伴" 
-          subtitle="携手行业领先企业，共创智慧物流新未来"
+        <SectionTitle
+          title="合作伙伴"
+          :subtitle="partnersSubtitle"
         />
-        <div class="partners-grid">
-          <div class="partner-item" v-for="i in 8" :key="i">
+        <div class="partners-grid" v-if="partners.length">
+          <div class="partner-item" v-for="partner in partners" :key="partner.name">
             <div class="partner-logo">
               <el-icon :size="32"><OfficeBuilding /></el-icon>
-              <span>合作伙伴 {{ i }}</span>
+              <span>{{ partner.name }}</span>
             </div>
           </div>
         </div>
+        <div class="partners-grid" v-else-if="loading" aria-hidden="true">
+          <div class="partner-item partner-skeleton" v-for="n in 8" :key="`sk-${n}`"></div>
+        </div>
+        <el-empty v-else description="暂无合作伙伴" />
       </div>
     </section>
     
@@ -121,14 +134,32 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import HeroBanner from '@/components/HeroBanner.vue'
 import SectionTitle from '@/components/SectionTitle.vue'
 import FeatureCard from '@/components/FeatureCard.vue'
 import ProductCard from '@/components/ProductCard.vue'
 import CaseCard from '@/components/CaseCard.vue'
 import { useRouter } from 'vue-router'
+import { useBrand } from '@/composables/useBrand.js'
+import { partnersSummary } from '@/data/brand.js'
 
 const router = useRouter()
+
+// 首页所有内容（统计 / 优势 / 产品 / 案例 / 合作伙伴）共享同一数据源，
+// 与 HeroBanner、NavHeader 看到的是同一份数据
+const { brand, loading } = useBrand()
+
+const features = computed(() => brand.value?.features ?? [])
+const products = computed(() => brand.value?.products ?? [])
+const stats = computed(() => brand.value?.stats ?? [])
+const cases = computed(() => brand.value?.cases ?? [])
+const partners = computed(() => brand.value?.partners ?? [])
+
+// 合作伙伴数量始终来自名单长度，区块文案与统计口径不会再对不上
+const partnersSubtitle = computed(() =>
+  partnersSummary.subtitle(partners.value.length)
+)
 
 const handleProductDetail = (productId) => {
   if (productId) {
@@ -137,81 +168,6 @@ const handleProductDetail = (productId) => {
     router.push('/products')
   }
 }
-
-const features = [
-  {
-    icon: 'Cpu',
-    title: '智能化技术',
-    description: '基于AI和大数据的智能算法，实现物流全流程自动化决策'
-  },
-  {
-    icon: 'Connection',
-    title: '全链路整合',
-    description: '打通仓储、运输、配送各环节，实现供应链一体化管理'
-  },
-  {
-    icon: 'DataAnalysis',
-    title: '数据驱动',
-    description: '实时数据监控与分析，助力企业精准决策，降本增效'
-  },
-  {
-    icon: 'Service',
-    title: '专业服务',
-    description: '资深行业专家团队，提供7x24小时技术支持与咨询服务'
-  }
-]
-
-const products = [
-  {
-    id: 'wms',
-    icon: 'Box',
-    title: '智慧仓储系统',
-    description: '全面的仓库管理解决方案，实现库存精准管控',
-    features: ['库位智能管理', '出入库自动化', '库存实时监控', '批次追溯管理']
-  },
-  {
-    id: 'tms',
-    icon: 'Van',
-    title: '运输管理系统',
-    description: '高效的运输调度平台，优化运输成本与时效',
-    features: ['智能路径规划', '车辆实时追踪', '运费自动核算', '承运商管理']
-  },
-  {
-    id: 'dms',
-    icon: 'Location',
-    title: '配送调度系统',
-    description: '智能配送解决方案，提升末端配送效率',
-    features: ['订单智能分配', '配送路线优化', '签收电子化', '配送员管理']
-  }
-]
-
-const stats = [
-  { icon: 'User', value: '500+', label: '服务客户' },
-  { icon: 'Goods', value: '1亿+', label: '日处理订单' },
-  { icon: 'TrendCharts', value: '30%', label: '效率提升' },
-  { icon: 'Timer', value: '99.9%', label: '系统稳定性' }
-]
-
-const cases = [
-  {
-    title: '某大型电商平台',
-    description: '通过部署知运智慧仓储系统，实现仓库作业效率提升40%，库存准确率达99.9%',
-    tag: '电商物流',
-    industry: '电子商务'
-  },
-  {
-    title: '某知名快递企业',
-    description: '采用知运运输管理系统，优化运输路线，降低运输成本25%，时效提升20%',
-    tag: '快递物流',
-    industry: '快递行业'
-  },
-  {
-    title: '某连锁零售集团',
-    description: '使用知运配送调度系统，实现门店配送准时率提升至98%，客户满意度显著提高',
-    tag: '零售配送',
-    industry: '零售行业'
-  }
-]
 </script>
 
 <style lang="scss" scoped>
@@ -273,10 +229,22 @@ const cases = [
   align-items: center;
   justify-content: center;
   transition: all 0.3s;
-  
+
   &:hover {
     box-shadow: $shadow-md;
   }
+}
+
+.partner-skeleton {
+  min-height: 96px;
+  background: linear-gradient(90deg, $bg-color 25%, $border-light 37%, $bg-color 63%);
+  background-size: 400% 100%;
+  animation: partner-loading 1.4s ease infinite;
+}
+
+@keyframes partner-loading {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
 }
 
 .partner-logo {

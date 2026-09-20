@@ -26,17 +26,9 @@
           </el-button>
         </div>
         <div class="hero-stats animate-fadeInUp" style="animation-delay: 0.6s">
-          <div class="stat-item">
-            <span class="stat-value">500+</span>
-            <span class="stat-label">服务客户</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value">99.9%</span>
-            <span class="stat-label">系统稳定性</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value">30%</span>
-            <span class="stat-label">效率提升</span>
+          <div class="stat-item" v-for="stat in heroStats" :key="stat.key">
+            <span class="stat-value">{{ stat.value }}</span>
+            <span class="stat-label">{{ stat.label }}</span>
           </div>
         </div>
       </div>
@@ -45,6 +37,15 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { useBrand } from '@/composables/useBrand.js'
+
+// 横幅统计与首页中部统计、合作伙伴区块共用同一数据源
+const { brand } = useBrand()
+
+const heroStats = computed(() =>
+  (brand.value?.stats ?? []).filter((stat) => stat.hero)
+)
 </script>
 
 <style lang="scss" scoped>
