@@ -1,37 +1,29 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { navMenu, companyInfo } from '@/data/site'
 
-const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: () => import('@/views/HomeView.vue'),
-    meta: { title: '首页' }
-  },
-  {
-    path: '/about',
-    name: 'About',
-    component: () => import('@/views/AboutView.vue'),
-    meta: { title: '关于我们' }
-  },
-  {
-    path: '/products',
-    name: 'Products',
-    component: () => import('@/views/ProductView.vue'),
-    meta: { title: '产品服务' }
-  },
-  {
-    path: '/cases',
-    name: 'Cases',
-    component: () => import('@/views/CaseView.vue'),
-    meta: { title: '案例展示' }
-  },
-  {
-    path: '/contact',
-    name: 'Contact',
-    component: () => import('@/views/ContactView.vue'),
-    meta: { title: '联系我们' }
-  }
-]
+const viewModules = {
+  '/': () => import('@/views/HomeView.vue'),
+  '/about': () => import('@/views/AboutView.vue'),
+  '/products': () => import('@/views/ProductView.vue'),
+  '/cases': () => import('@/views/CaseView.vue'),
+  '/contact': () => import('@/views/ContactView.vue')
+}
+
+const routeNames = {
+  '/': 'Home',
+  '/about': 'About',
+  '/products': 'Products',
+  '/cases': 'Cases',
+  '/contact': 'Contact'
+}
+
+// 路由由导航配置派生，菜单顺序、页面标题与导航共用同一来源
+const routes = navMenu.map(item => ({
+  path: item.path,
+  name: routeNames[item.path],
+  component: viewModules[item.path],
+  meta: { title: item.title }
+}))
 
 const router = createRouter({
   history: createWebHistory(),
@@ -48,7 +40,9 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  document.title = `${to.meta.title} - 广州知运信息技术有限公司`
+  document.title = to.meta.title
+    ? `${to.meta.title} - ${companyInfo.name}`
+    : companyInfo.name
   next()
 })
 

@@ -24,17 +24,9 @@
               帮助客户实现物流运营的数字化、智能化升级。
             </p>
             <div class="intro-stats">
-              <div class="stat-item">
-                <span class="value">6+</span>
-                <span class="label">年行业经验</span>
-              </div>
-              <div class="stat-item">
-                <span class="value">500+</span>
-                <span class="label">服务客户</span>
-              </div>
-              <div class="stat-item">
-                <span class="value">50+</span>
-                <span class="label">技术专利</span>
+              <div class="stat-item" v-for="stat in introStats" :key="stat.label">
+                <span class="value">{{ stat.value }}</span>
+                <span class="label">{{ stat.label }}</span>
               </div>
             </div>
           </div>
@@ -112,6 +104,16 @@
 
 <script setup>
 import SectionTitle from '@/components/SectionTitle.vue'
+import { getStatByKey } from '@/data/site'
+
+// 服务客户数与首页统计同源，避免多处维护导致数据对不上
+const customerStat = getStatByKey('customers')
+
+const introStats = [
+  { value: '6+', label: '年行业经验' },
+  { value: customerStat?.value ?? '500+', label: customerStat?.label ?? '服务客户' },
+  { value: '50+', label: '技术专利' }
+]
 
 const timeline = [
   {

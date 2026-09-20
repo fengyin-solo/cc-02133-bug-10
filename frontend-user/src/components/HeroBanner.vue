@@ -25,18 +25,10 @@
             免费咨询
           </el-button>
         </div>
-        <div class="hero-stats animate-fadeInUp" style="animation-delay: 0.6s">
-          <div class="stat-item">
-            <span class="stat-value">500+</span>
-            <span class="stat-label">服务客户</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value">99.9%</span>
-            <span class="stat-label">系统稳定性</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value">30%</span>
-            <span class="stat-label">效率提升</span>
+        <div class="hero-stats animate-fadeInUp" style="animation-delay: 0.6s" v-if="heroStats.length">
+          <div class="stat-item" v-for="stat in heroStats" :key="stat.key">
+            <span class="stat-value">{{ stat.value }}</span>
+            <span class="stat-label">{{ stat.label }}</span>
           </div>
         </div>
       </div>
@@ -45,6 +37,8 @@
 </template>
 
 <script setup>
+// 与首页数据统计区块共用同一来源，避免两处数据对不上
+import { heroStats } from '@/data/site'
 </script>
 
 <style lang="scss" scoped>

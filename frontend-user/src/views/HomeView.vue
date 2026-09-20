@@ -4,10 +4,10 @@
     <HeroBanner />
     
     <!-- 核心优势 -->
-    <section class="section section-gray">
+    <section class="section section-gray" v-if="features.length">
       <div class="container">
-        <SectionTitle 
-          title="为什么选择知运" 
+        <SectionTitle
+          title="为什么选择知运"
           subtitle="我们致力于为企业提供最专业的智慧物流解决方案"
         />
         <div class="row">
@@ -23,7 +23,7 @@
     </section>
     
     <!-- 产品服务 -->
-    <section class="section section-light">
+    <section class="section section-light" v-if="products.length">
       <div class="container">
         <SectionTitle 
           title="产品与服务" 
@@ -45,10 +45,10 @@
     </section>
     
     <!-- 数据展示 -->
-    <section class="section section-dark stats-section">
+    <section class="section section-dark stats-section" v-if="stats.length">
       <div class="container">
         <div class="stats-grid">
-          <div class="stat-card" v-for="stat in stats" :key="stat.label">
+          <div class="stat-card" v-for="stat in stats" :key="stat.key">
             <div class="stat-icon">
               <el-icon :size="32">
                 <component :is="stat.icon" />
@@ -62,7 +62,7 @@
     </section>
     
     <!-- 成功案例 -->
-    <section class="section section-gray">
+    <section class="section section-gray" v-if="cases.length">
       <div class="container">
         <SectionTitle 
           title="成功案例" 
@@ -89,17 +89,17 @@
     </section>
     
     <!-- 合作伙伴 -->
-    <section class="section section-light">
+    <section class="section section-light" v-if="partners.length">
       <div class="container">
-        <SectionTitle 
-          title="合作伙伴" 
+        <SectionTitle
+          title="合作伙伴"
           subtitle="携手行业领先企业，共创智慧物流新未来"
         />
         <div class="partners-grid">
-          <div class="partner-item" v-for="i in 8" :key="i">
+          <div class="partner-item" v-for="partner in partners" :key="partner.id">
             <div class="partner-logo">
               <el-icon :size="32"><OfficeBuilding /></el-icon>
-              <span>合作伙伴 {{ i }}</span>
+              <span>{{ partner.name }}</span>
             </div>
           </div>
         </div>
@@ -127,6 +127,13 @@ import FeatureCard from '@/components/FeatureCard.vue'
 import ProductCard from '@/components/ProductCard.vue'
 import CaseCard from '@/components/CaseCard.vue'
 import { useRouter } from 'vue-router'
+import {
+  coreFeatures,
+  homeProducts,
+  siteStats,
+  homeCases,
+  partners
+} from '@/data/site'
 
 const router = useRouter()
 
@@ -138,80 +145,11 @@ const handleProductDetail = (productId) => {
   }
 }
 
-const features = [
-  {
-    icon: 'Cpu',
-    title: '智能化技术',
-    description: '基于AI和大数据的智能算法，实现物流全流程自动化决策'
-  },
-  {
-    icon: 'Connection',
-    title: '全链路整合',
-    description: '打通仓储、运输、配送各环节，实现供应链一体化管理'
-  },
-  {
-    icon: 'DataAnalysis',
-    title: '数据驱动',
-    description: '实时数据监控与分析，助力企业精准决策，降本增效'
-  },
-  {
-    icon: 'Service',
-    title: '专业服务',
-    description: '资深行业专家团队，提供7x24小时技术支持与咨询服务'
-  }
-]
-
-const products = [
-  {
-    id: 'wms',
-    icon: 'Box',
-    title: '智慧仓储系统',
-    description: '全面的仓库管理解决方案，实现库存精准管控',
-    features: ['库位智能管理', '出入库自动化', '库存实时监控', '批次追溯管理']
-  },
-  {
-    id: 'tms',
-    icon: 'Van',
-    title: '运输管理系统',
-    description: '高效的运输调度平台，优化运输成本与时效',
-    features: ['智能路径规划', '车辆实时追踪', '运费自动核算', '承运商管理']
-  },
-  {
-    id: 'dms',
-    icon: 'Location',
-    title: '配送调度系统',
-    description: '智能配送解决方案，提升末端配送效率',
-    features: ['订单智能分配', '配送路线优化', '签收电子化', '配送员管理']
-  }
-]
-
-const stats = [
-  { icon: 'User', value: '500+', label: '服务客户' },
-  { icon: 'Goods', value: '1亿+', label: '日处理订单' },
-  { icon: 'TrendCharts', value: '30%', label: '效率提升' },
-  { icon: 'Timer', value: '99.9%', label: '系统稳定性' }
-]
-
-const cases = [
-  {
-    title: '某大型电商平台',
-    description: '通过部署知运智慧仓储系统，实现仓库作业效率提升40%，库存准确率达99.9%',
-    tag: '电商物流',
-    industry: '电子商务'
-  },
-  {
-    title: '某知名快递企业',
-    description: '采用知运运输管理系统，优化运输路线，降低运输成本25%，时效提升20%',
-    tag: '快递物流',
-    industry: '快递行业'
-  },
-  {
-    title: '某连锁零售集团',
-    description: '使用知运配送调度系统，实现门店配送准时率提升至98%，客户满意度显著提高',
-    tag: '零售配送',
-    industry: '零售行业'
-  }
-]
+// 首页展示数据统一来自 @/data/site，保证各区块及页面标题同源一致
+const features = coreFeatures
+const products = homeProducts
+const stats = siteStats
+const cases = homeCases
 </script>
 
 <style lang="scss" scoped>

@@ -33,15 +33,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { useRoute } from 'vue-router'
+import { navMenu } from '@/data/site'
 
-const menuItems = [
-  { name: '首页', path: '/' },
-  { name: '关于我们', path: '/about' },
-  { name: '产品服务', path: '/products' },
-  { name: '案例展示', path: '/cases' },
-  { name: '联系我们', path: '/contact' }
-]
+// 菜单项与路由页面标题共用同一份配置，保证入口顺序一致
+const menuItems = navMenu
 
 const isScrolled = ref(false)
 const menuOpen = ref(false)
@@ -50,12 +47,31 @@ const handleScroll = () => {
   isScrolled.value = window.scrollY > 50
 }
 
+// 与样式中 $breakpoint-lg(992px) 保持一致
+const DESKTOP_BREAKPOINT = 992
+
+// 窗口恢复到桌面断点时收起移动端菜单，避免折叠状态残留
+const handleResize = () => {
+  if (window.innerWidth > DESKTOP_BREAKPOINT) {
+    menuOpen.value = false
+  }
+}
+
+const route = useRoute()
+
+// 路由切换（含浏览器前进/返回）时收起菜单，避免展开状态残留
+watch(() => route.fullPath, () => {
+  menuOpen.value = false
+})
+
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
+  window.addEventListener('resize', handleResize)
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  window.removeEventListener('resize', handleResize)
 })
 </script>
 
